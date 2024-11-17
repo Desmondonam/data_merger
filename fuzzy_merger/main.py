@@ -3,7 +3,7 @@
 
 import pandas as pd
 # from fuzzy_merge.data_merger import merge_data
-from data_merger import merge_data
+from merger import DataMerger
 
 
 # Sample data
@@ -29,8 +29,14 @@ data2 = {
 df1 = pd.DataFrame(data1)
 df2 = pd.DataFrame(data2)
 
+# Create an instance of DataMerger
+merger = DataMerger(df1, df2)
+
 # Perform the merge
-df2 = merge_data(df1, df2)
+merged_data = merger.merge_data()
+
+# # Perform the merge
+# df2 = merge_data(df1, df2)
 
 print("Updated DataFrame 2:")
-print(df2)
+print(merged_data)

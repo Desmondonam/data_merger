@@ -1,6 +1,6 @@
-# Configurations for the matching criteria
-# fuzzy_merge/config.py
+# address_matcher/config.py
 
-MATCH_THRESHOLD = 0.95  # Minimum score for a match to be considered valid
-COLUMNS_TO_COMPARE = ["email", "firstname", "lastname", "street", "zip", "city"]
-LEVENSHTEIN_TOLERANCE = 2  # Max edit distance for names and addresses
+config = {
+    "similarity_threshold": 0.95,  # Set threshold for fuzzy matching
+    "attributes": ["email", "first_name", "last_name", "street", "zip", "city"]
+}
