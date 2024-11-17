@@ -1,8 +1,10 @@
 # address_matcher/merger.py
 
+import sys
+sys.path.append(r'C:\Users\Admin\Desktop\Upwork\Sebastian_Jung\fuzzy_merger')
 import pandas as pd
 from matcher import FuzzyMatcher
-from utils import compare_with_regex
+from util import compare_with_regex
 
 class DataMerger:
     def __init__(self, df1, df2):
