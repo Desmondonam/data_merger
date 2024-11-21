@@ -85,28 +85,61 @@ class FuzzyMatcher:
         self.logger.info(f"Found {len(matches_df)} matches above threshold {self.similarity_threshold}.")
         return matches_df
 
+def update_df2_based_on_matches(df1, df2, matches_df):
+    """
+    Updates df2 with new records from df1 based on matching results.
+    If a match exists, updates the record in df2.
+    If no match exists, appends the new record to df2.
+    
+    Args:
+        df1 (pd.DataFrame): The first dataframe (source of updates).
+        df2 (pd.DataFrame): The second dataframe (target for updates).
+        matches_df (pd.DataFrame): Matching results with indices of matched rows and similarity scores.
+    
+    Returns:
+        pd.DataFrame: The updated version of df2.
+    """
+    # Iterate over each match and update df2 with values from df1
+    for _, match in matches_df.iterrows():
+        df1_index = match['df1_index']
+        df2_index = match['df2_index']
+
+        # Update df2 row with df1 values for the matching row
+        df2.loc[df2_index] = df1.loc[df1_index]
+
+    # Find records in df1 that did not match with df2
+    unmatched_df1_indices = list(set(df1.index) - set(matches_df['df1_index']))  # Convert set to list
+    unmatched_df1 = df1.loc[unmatched_df1_indices]
+
+    # Append unmatched records to df2
+    df2 = pd.concat([df2, unmatched_df1], ignore_index=True)
+    
+    return df2
 
 # Example Usage
 if __name__ == "__main__":
-    df1 = pd.DataFrame({
-        'email': ['test@example.com', 'john.doe@gmail.com'],
-        'first_name': ['Test', 'John'],
-        'last_name': ['User', 'Doe'],
-        'street': ['123 Elm St', '456 Maple Ave'],
-        'zip': ['12345', '67890'],
-        'city': ['Springfield', 'Metropolis']
-    })
+    data1 = {
+    'email': ['john.doe@example.com', 'jane.smith@example.com'],
+    'first_name': ['John', 'Jane'],
+    'last_name': ['Doe', 'Smith'],
+    'street': ['123 Maple St', '456 Oak St'],
+    'zip': ['12345', '67890'],
+    'city': ['Springfield', 'Shelbyville']
+    }
+    data2 = {
+    'email': ['jane.smith@example.com', 'john.doe@example.com'],
+    'first_name': ['Jane', 'John'],
+    'last_name': ['Smith', 'Doe'],
+    'street': ['456 Oak Street', '123 Maple Street'],
+    'zip': ['67890', '12345'],
+    'city': ['Shelbyville', 'Springfield']
+    }
 
-    df2 = pd.DataFrame({
-        'email': ['test@example.com', 'jane.doe@gmail.com'],
-        'first_name': ['Test', 'Jane'],
-        'last_name': ['User', 'Doe'],
-        'street': ['123 Elm St', '789 Oak St'],
-        'zip': ['12345', '67890'],
-        'city': ['Springfield', 'Gotham']
-    })
+    df1 = pd.DataFrame(data1)
+    df2 = pd.DataFrame(data2)
 
     matcher = FuzzyMatcher(df1, df2, similarity_threshold=0.85)
     matches = matcher.perform_matching()
-    print(matches)
-    print(df2)
+    updated_df2 = update_df2_based_on_matches(df1, df2, matches)
+    print("Updated df2:")
+    print(updated_df2)
